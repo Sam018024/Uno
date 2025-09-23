@@ -48,6 +48,7 @@ while Choice != "0":
         gamePlaying = True
         playerNum = -1
         orderOfPlay = 1
+        tempplayerNum = None
         while gamePlaying == True:
             time.sleep(0.5)
             going = None
@@ -85,6 +86,8 @@ while Choice != "0":
                         if discardPile[0].getValue() == "Skip":
                             tempplayerNum = playerNum + orderOfPlay
                         elif discardPile[0].getValue() == "Reverse":
+                            if playerCount == 2:
+                                tempplayerNum = playerNum + orderOfPlay
                             orderOfPlay *= -1
                         elif discardPile[0].getValue() == "+2":
                             playerTarget = playerNum + orderOfPlay
@@ -133,11 +136,9 @@ while Choice != "0":
                         if len(playerList[playerNum].getCardList()) == 0:
                             gamePlaying = False
                             print(playerList[playerNum].getPlayerName(), "has won")
-                        try:
+                        if tempplayerNum != None:
                             playerNum = tempplayerNum
                             tempplayerNum = None
-                        except:
-                            temp = 0
                         going = False                   
                         
                     else:
