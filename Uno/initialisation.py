@@ -60,11 +60,11 @@ class Deck(object):
 
     def getTopCard(self):
         if len(self.__cardList) > 0:
-            return self.__cardList.pop()
+            return self.__cardList.pop(0)
         else:
             self.createDeck()
             self.shuffleDeck()
-            return self.__cardList.pop()
+            return self.__cardList.pop(0)
 
     def getFirstNonWildCard(self):
         searching = True
@@ -72,7 +72,7 @@ class Deck(object):
             if len(self.__cardList) > 0:
                 if self.__cardList[0].getColour() != "Wild":
                     searching = False
-                    return self.__cardList.pop()
+                    return self.__cardList.pop(0)
                 else:
                     del self.__cardList[0]
             else:
