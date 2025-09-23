@@ -1,6 +1,7 @@
 ##IMPORTS-------
 import initialisation
 import random
+import time
 ##--------------
 ##INITIALVALUES-
 Choice = "-1"
@@ -42,12 +43,13 @@ while Choice != "0":
             playerList.append(playerHand)
 
         discardPile = [Deck.getFirstNonWildCard()]
-        print(discardPile[0])
+        print("--------------------------")
         
         gamePlaying = True
         playerNum = -1
         orderOfPlay = 1
         while gamePlaying == True:
+            time.sleep(0.5)
             going = None
             numberOfPlayers = len(playerList) - 1
             playerNum += orderOfPlay
@@ -66,16 +68,15 @@ while Choice != "0":
             if going != True:
                 print(playerName, "could not go, they drew a card")
                 playerList[playerNum].drawCard(Deck)
-            print("The card on top of the discard pile is", discardPile[0])
+                print("--------------------------")
+            
             while going == True:
+                print("The card on top of the discard pile is", discardPile[0])
                 action = input("Give the number of the card you would like to play: ")
                 try:
                     action = int(action)
-                    print("conversion")
                     action2 = action
-                    print("action2 = action")
                     action -= 1
-                    print("action -= 1")
                     if playerList[playerNum].getCardList()[action].getColour() == discardPile[0].getColour() or playerList[playerNum].getCardList()[action].getValue() == discardPile[0].getValue() or playerList[playerNum].getCardList()[action].getColour() == "Wild":
                         del discardPile[0]
                         playedCard = playerList[playerNum].getCardList()[action]
@@ -102,7 +103,7 @@ while Choice != "0":
                             for i in range(0,4):
                                 playerList[playerTarget].drawCard(Deck)
                         else:
-                            print("If you see this something has gone wrong with the value check or it is a number")
+                            temp = 0
                         if discardPile[0].getColour() == "Wild":
                             choosingColour = True
                             print("""PICK A COLOUR
@@ -127,7 +128,7 @@ while Choice != "0":
                                 else:
                                     print(colourChoice, "is not a valid answer")
                         else:
-                            print("Wild Check")
+                            temp = 0
                         
                         if len(playerList[playerNum].getCardList()) == 0:
                             gamePlaying = False
@@ -137,11 +138,11 @@ while Choice != "0":
                             tempplayerNum = None
                         except:
                             temp = 0
-                            print(temp)
                         going = False                   
                         
                     else:
                         print(playerList[playerNum].getCardList()[action], "is not a legal move")
+                    print("--------------------------")
                 except:
                     print(action2, "is not a valid go.")
                 
