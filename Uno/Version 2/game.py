@@ -1,7 +1,7 @@
 ##IMPORTS----------
 from tkinter import *
 from tkinter import ttk
-from PIL import Image, ImageTk
+##from PIL import Image, ImageTk
 ##HEXAS------------
 bgHexa = "#ed1c24"
 bgActiveHexa = "#E21219"
@@ -85,10 +85,12 @@ def lobby(root, playersQLabel, playerAmountCombobox, nextButton):
                             bd=3,
                             bg=fgHexa   
                             )
+        fifthScreen = root.winfo_screenheight() // 10
         playerFrame.pack(side = "top",
                          fill = "x",
                          padx = (20),
-                         pady = (20))
+                         pady = (20)
+                         )
         for i in range(0, playerNum):
             playerFrame.columnconfigure(i, weight=1)
             playerUserLbl_Var = StringVar()
@@ -118,8 +120,9 @@ def lobby(root, playersQLabel, playerAmountCombobox, nextButton):
                        fill = "x",
                        padx = (20),
                        pady = (20),
+                       ipady = (10)
                     )
-        for i in range(0,2):
+        for i in range(0,3):
             ruleFrame.columnconfigure(i, weight=1)
         ##DRAWING RULES
         drawLabel = Label(ruleFrame,
@@ -132,16 +135,19 @@ def lobby(root, playersQLabel, playerAmountCombobox, nextButton):
                           )
         drawLabel.grid(row = 0, column = 0, sticky="nsew", padx = 10)
         drawChoices = StringVar()
-        drawChoices.set("Draw Once")
         drawCombobox = ttk.Combobox(ruleFrame,
                                     textvariable = drawChoices,
                                     justify = "center",
                                     state="readonly",
-                                    font=("Arial", 10, "bold")
+                                    font=("Arial", 15, "bold")
                                     )
         drawCombobox['values'] = ('Draw Once',
                                   'Draw until Playable')
-        drawCombobox.grid(row = 1, column = 0, sticky="nsew", padx = 10, ipady = 20)
+
+        drawChoices.set('Draw Once')
+        drawCombobox.current(0)
+        ruleFrame.update_idletasks()
+        drawCombobox.grid(row = 1, column = 0, sticky="nsew", padx = 10, ipady = 5)
         ##-----------------
         drawButtonLabel = Label(ruleFrame,
                           text = "Draw Button",
@@ -154,18 +160,119 @@ def lobby(root, playersQLabel, playerAmountCombobox, nextButton):
         
         drawButtonLabel.grid(row = 0, column = 1, sticky="nsew", padx = 10)
         drawButtonChoices = StringVar()
-        drawButtonChoices.set("Have Button")
         drawButtonCombobox = ttk.Combobox(ruleFrame,
                                     textvariable = drawButtonChoices,
                                     justify = "center",
                                     state="readonly",
-                                    font=("Arial", 10, "bold")
+                                    font=("Arial", 15, "bold")
                                     )
         drawButtonCombobox['values'] = ('Have Button',
                                   'Do not have Button')
-        drawButtonCombobox.grid(row = 1, column = 1, sticky="nsew", padx = 10, ipady = 20)
-        
-        ##drawOptionLabel = 
+
+        drawButtonChoices.set('Have Button')
+        drawButtonCombobox.current(0)
+        ruleFrame.update_idletasks()
+        drawButtonCombobox.grid(row = 1, column = 1, sticky="nsew", padx = 10, ipady = 5)
+        ##7-0 RULES
+        sevenZeroLabel = Label(ruleFrame,
+                          text = "7-0 Rule",
+                          anchor = CENTER,
+                          justify = "center",
+                          bg = darkHexa,
+                          fg = fgHexa,
+                          font = ("Arial", 20, "bold")
+                          )
+        sevenZeroLabel.grid(row = 0, column = 2, sticky="nsew", padx = 10, pady=(10,0))
+        sevenZeroChoices = StringVar()
+        sevenZeroCombobox = ttk.Combobox(ruleFrame,
+                                    textvariable = sevenZeroChoices,
+                                    justify = "center",
+                                    state="readonly",
+                                    font=("Arial", 15, "bold")
+                                    )
+        sevenZeroCombobox['values'] = ('None',
+                                       '7s Swap 1 to 1',
+                                       '0s Swap Clockwise',
+                                       'Both')
+        sevenZeroChoices.set('None')
+        sevenZeroCombobox.current(0)
+        ruleFrame.update_idletasks()
+        sevenZeroCombobox.grid(row = 1, column = 2, sticky="nsew", padx = 10, ipady = 5)
+        ##STACKING RULES
+        stackingLabel = Label(ruleFrame,
+                          text = "Stacking",
+                          anchor = CENTER,
+                          justify = "center",
+                          bg = darkHexa,
+                          fg = fgHexa,
+                          font = ("Arial", 20, "bold")
+                          )
+        stackingLabel.grid(row = 2, column = 0, sticky="nsew", padx = 10, pady=(10,0))
+        stackingChoices = StringVar()
+        stackingCombobox = ttk.Combobox(ruleFrame,
+                                    textvariable = stackingChoices,
+                                    justify = "center",
+                                    state="readonly",
+                                    font=("Arial", 15, "bold")
+                                    )
+        stackingCombobox['values'] = ('No Stacking',
+                                      'Stack 2s on 2s',
+                                      'Stack 4s on 4s',
+                                      'Stack Everything',
+                                      'All')
+        stackingChoices.set('No Stacking')
+        stackingCombobox.current(0)
+        ruleFrame.update_idletasks()
+        stackingCombobox.grid(row = 3, column = 0, sticky="nsew", padx = 10, ipady = 5)
+        ##UNO CALL RULES
+        unoCallLabel = Label(ruleFrame,
+                          text = "UNO!",
+                          anchor = CENTER,
+                          justify = "center",
+                          bg = darkHexa,
+                          fg = fgHexa,
+                          font = ("Arial", 20, "bold")
+                          )
+        unoCallLabel.grid(row = 2, column = 1, sticky="nsew", padx = 10, pady=(10,0))
+        unoCallChoices = StringVar()
+        unoCallCombobox = ttk.Combobox(ruleFrame,
+                                    textvariable = unoCallChoices,
+                                    justify = "center",
+                                    state="readonly",
+                                    font=("Arial", 15, "bold")
+                                    )
+        unoCallCombobox['values'] = ('Call Uno before playing second to last card',
+                                     'No need to call Uno')
+        unoCallChoices.set('Call Uno before playing second to last card')
+        unoCallCombobox.current(0)
+        ruleFrame.update_idletasks()
+        unoCallCombobox.grid(row = 3, column = 1, sticky="nsew", padx = 10, ipady = 5)
+        ##WILD SHUFFLE RULES
+        wildShuffleLabel = Label(ruleFrame,
+                          text = "Wild Shuffle",
+                          anchor = CENTER,
+                          justify = "center",
+                          bg = darkHexa,
+                          fg = fgHexa,
+                          font = ("Arial", 20, "bold")
+                          )
+        wildShuffleLabel.grid(row = 2, column = 2, sticky="nsew", padx = 10, pady=(10,0))
+        wildShuffleChoices = StringVar()
+        wildShuffleCombobox = ttk.Combobox(ruleFrame,
+                                    textvariable = wildShuffleChoices,
+                                    justify = "center",
+                                    state="readonly",
+                                    font=("Arial", 15, "bold")
+                                    )
+        wildShuffleCombobox['values'] = ('No Shuffle',
+                                         'Shuffle Hands on Wild',
+                                         'Shuffle Hands on Wild +4',
+                                         'Shuffle Hands on Both')
+        wildShuffleChoices.set('No Shuffle')
+        wildShuffleCombobox.current(0)
+        ruleFrame.update_idletasks()
+        wildShuffleCombobox.grid(row = 3, column = 2, sticky="nsew", padx = 10, ipady = 5)
+        ##-----------------
         playButton = Button(root,
                             text = "Play!",
                             command = lambda: playGame(root),
@@ -180,6 +287,7 @@ def lobby(root, playersQLabel, playerAmountCombobox, nextButton):
                             font = ("Arial", 40, "bold")
                             )
         playButton.pack()
+        root.mainloop()
 ##-----------------
 def playerChoice(root):
     root.geometry("300x250")
@@ -195,7 +303,6 @@ def playerChoice(root):
                        )
     ##-----------------
     playerAmountChoices = StringVar()
-    playerAmountChoices.set("2")
     playerAmountCombobox = ttk.Combobox(root,
                                         width = 3,
                                         textvariable = playerAmountChoices,
@@ -209,6 +316,8 @@ def playerChoice(root):
                                       '5',
                                       '6',
                                       '7')
+
+    playerAmountCombobox.current(0)
     ##-----------------
     nextButton = Button(root,
                         text = "Next",
