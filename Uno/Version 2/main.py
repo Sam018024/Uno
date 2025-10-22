@@ -15,12 +15,12 @@ def play():
 def leave():
     root.destroy()
 ##HEXAS------------
-bgHexa = "#ed1c24"
-bgActiveHexa = "#E21219"
-fgHexa = "#f8da27"
-fgActiveHexa = "#F8D512"
-darkHexa = "#58585a"
-darkActiveHexa = "#515152"
+bgHexa = "#C21E1E"
+bgActiveHexa = "#B01C1C"
+fgHexa = "#F5C928"
+fgActiveHexa = "#F4C415"
+darkHexa = "#691111"
+darkActiveHexa = "#580E0E"
 ##WINDOWCREATION---
 root = Tk()
 root.geometry("790x560")

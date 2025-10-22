@@ -1,17 +1,35 @@
 ##IMPORTS----------
 from tkinter import *
 from tkinter import ttk
-##from PIL import Image, ImageTk
+from PIL import Image, ImageTk
+import initialisation
 ##HEXAS------------
-bgHexa = "#ed1c24"
-bgActiveHexa = "#E21219"
-fgHexa = "#f8da27"
-fgActiveHexa = "#F8D512"
-darkHexa = "#58585a"
-darkActiveHexa = "#515152"
+bgHexa = "#C21E1E"
+bgActiveHexa = "#B01C1C"
+fgHexa = "#F5C928"
+fgActiveHexa = "#F4C415"
+darkHexa = "#691111"
+darkActiveHexa = "#580E0E"
 ##-----------------
 def playGame(root):
-    root.destroy()
+    for widget in root.winfo_children():
+        widget.destroy()
+    discardPile = []
+    deck = initialisation.Deck()
+    deck.createDeck()
+    deck.shuffleDeck()
+    discardPile.append(deck.getFirstNonWildCard())
+    discImage = PhotoImage(file=discardPile[0].getFilename())
+    size = int(round(3000/(root.winfo_screenheight()/4), 0))
+    discImage = discImage.subsample(size, size)
+    discardPileImage = Label(root,
+                             image = discImage,
+                             anchor = CENTER,
+                             bg = bgHexa,
+                             fg = fgHexa
+                             )
+    discardPileImage.pack(pady = (root.winfo_screenheight()/8, 0))
+    root.mainloop()
 ##-----------------
 def setNext(root, enterPlayerEntry):
     global Next
@@ -104,11 +122,11 @@ def lobby(root, playersQLabel, playerAmountCombobox, nextButton):
                                   )
             playerUserLbl.grid(row = 0, column = i, sticky="nsew", padx = 10)
         ruleLabel = Label(root,
-                          text = "RULES:",
+                          text = " RULES: ",
                           anchor = CENTER,
                           bg = fgHexa,
-                          fg = darkActiveHexa,
-                          font = ("Arial", 20, "bold")
+                          fg = darkHexa,
+                          font = ("Arial", 40, "bold")
                           )
         ruleLabel.pack()
         ##PUT RULES BEFORE PLAY
