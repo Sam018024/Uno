@@ -11,7 +11,14 @@ fgActiveHexa = "#F4C415"
 darkHexa = "#691111"
 darkActiveHexa = "#580E0E"
 ##-----------------
-def playGame(root):
+def playGame(root, playerNum):
+    def nextPlayer(playerNum, numOfPlayers, order):
+        playerNum += order
+        if playerNum > (numOfPlayers - 1):
+            playerNum -= numOfPlayers
+        elif playerNum < 0:
+            playerNum += numOfPlayers
+        return playerNum
     for widget in root.winfo_children():
         widget.destroy()
     discardPile = []
@@ -19,17 +26,74 @@ def playGame(root):
     deck.createDeck()
     deck.shuffleDeck()
     discardPile.append(deck.getFirstNonWildCard())
-    discImage = PhotoImage(file=discardPile[0].getFilename())
-    size = int(round(3000/(root.winfo_screenheight()/4), 0))
-    discImage = discImage.subsample(size, size)
-    discardPileImage = Label(root,
-                             image = discImage,
-                             anchor = CENTER,
-                             bg = bgHexa,
-                             fg = fgHexa
-                             )
-    discardPileImage.pack(pady = (root.winfo_screenheight()/8, 0))
-    root.mainloop()
+    playerList = []
+    for i in range(0, playerNum):
+        playerHand = initialisation.playerHand(playerUserList[i])
+        playerHand.drawStartingHand(deck)
+        playerList.append(playerHand)
+
+    gamePlaying = True
+    playerNum = -1
+    orderOfPlay = 1
+    newTurn = False
+
+    while gamePlaying == True:
+        if newTurn == True:
+            for widget in root.winfo_children():
+                widget.destroy()
+                newTurn = False
+        discImage = PhotoImage(file=discardPile[0].getFilename())
+        size = int(round(3000/(root.winfo_screenheight()/4), 0))
+        discImage = discImage.subsample(size, size)
+        discardPileImage = Label(root,
+                                 image = discImage,
+                                 anchor = CENTER,
+                                 bg = bgHexa,
+                                 fg = fgHexa
+                                 )
+        discardPileImage.pack(pady = (root.winfo_screenheight()/8, 0))
+        playerNum = nextPlayer(playerNum, len(playerList), orderOfPlay)
+        playerLabel_var = StringVar()
+        playerLabel_var.set(str(playerList[playerNum].getPlayerName()) + ":")
+        playerLabel = Label(root,
+                            textvariable = playerLabel_var,
+                            anchor = CENTER,
+                            bg = bgHexa,
+                            fg = fgHexa,
+                            font = ("Arial", 40, "bold")
+                            )
+        playerLabel.pack(pady=5)
+        handFrame = Frame(root,
+                          width=root.winfo_width(),
+                          bd=3,
+                          bg=fgHexa
+                          )
+        handCanvas = Canvas(handFrame,
+                            bg=darkHexa)
+        handScrollbar = Scrollbar(handFrame,
+                                  orient='horizontal'
+                                  )
+        
+        
+        handFrame.pack(side='bottom', fill='x')
+        handScrollbar.pack(side='bottom', fill='x')
+        handCanvas.pack(pady=10, padx=10, side='bottom', fill='x')
+        handCanvas.configure(xscrollcommand=handScrollbar.set)
+
+        cardsFrame = Frame(handCanvas,
+                           bg=darkHexa
+                           )
+        for i in range(0, len(playerList[playerNum].getCardList())):
+            cardImage = PhotoImage(file=playerList[playerNum].getCardList()[i].getFilename())
+            cardImage = cardImage.subsample(size, size)
+            cardBtn = (cardsFrame,
+                       image = cardImage,
+                       anchor = CENTER,
+                       bg = bgHexa,
+                       fg = fgHexa
+                       )
+            cardBtn.pack()
+        root.mainloop()
 ##-----------------
 def setNext(root, enterPlayerEntry):
     global Next
@@ -293,7 +357,7 @@ def lobby(root, playersQLabel, playerAmountCombobox, nextButton):
         ##-----------------
         playButton = Button(root,
                             text = "Play!",
-                            command = lambda: playGame(root),
+                            command = lambda: playGame(root, playerNum),
                             activebackground = fgActiveHexa,
                             activeforeground = darkActiveHexa,
                             anchor = "center",
