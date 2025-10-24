@@ -86,7 +86,7 @@ def playGame(root, playerNum):
         for i in range(0, len(playerList[playerNum].getCardList())):
             cardImage = PhotoImage(file=playerList[playerNum].getCardList()[i].getFilename())
             cardImage = cardImage.subsample(size, size)
-            cardBtn = (cardsFrame,
+            cardBtn = Button(cardsFrame,
                        image = cardImage,
                        anchor = CENTER,
                        bg = bgHexa,
