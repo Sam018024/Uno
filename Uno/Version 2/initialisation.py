@@ -18,7 +18,7 @@ class Card(object):
         return string
 
     def setFilename(self):
-        self.__filename = "assets/" + str(self.__colour) + "_" + str(self.__value) + ".png"
+        self.__filename = str(self.__colour) + "_" + str(self.__value) + ".png"
 
     def setColour(self, colour):
         self.__colour = colour
