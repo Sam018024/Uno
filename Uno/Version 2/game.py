@@ -2,6 +2,7 @@
 from tkinter import *
 from tkinter import ttk
 from PIL import Image, ImageTk
+from pathlib import Path
 import initialisation
 ##HEXAS------------
 bgHexa = "#C21E1E"
@@ -42,7 +43,9 @@ def playGame(root, playerNum):
             for widget in root.winfo_children():
                 widget.destroy()
                 newTurn = False
-        discImage = PhotoImage(file=discardPile[0].getFilename())
+        script_dir = Path(__file__).parent
+        image_path = script_dir / "assets" / discardPile[0].getFilename()
+        discImage = PhotoImage(file=image_path)
         size = int(round(3000/(root.winfo_screenheight()/4), 0))
         discImage = discImage.subsample(size, size)
         discardPileImage = Label(root,
@@ -83,16 +86,24 @@ def playGame(root, playerNum):
         cardsFrame = Frame(handCanvas,
                            bg=darkHexa
                            )
+        cardsFrame.pack()
+        cardList = []
+        cardImageList = []
         for i in range(0, len(playerList[playerNum].getCardList())):
-            cardImage = PhotoImage(file=playerList[playerNum].getCardList()[i].getFilename())
+            script_dir = Path(__file__).parent
+            image_path = script_dir / "assets" / playerList[playerNum].getCardList()[i].getFilename()
+            cardImage = PhotoImage(file=image_path)
             cardImage = cardImage.subsample(size, size)
+            cardImageList.append(cardImage)
             cardBtn = Button(cardsFrame,
-                       image = cardImage,
+                       image = cardImageList[i],
                        anchor = CENTER,
+                       border = 0,
                        bg = bgHexa,
                        fg = fgHexa
                        )
-            cardBtn.pack()
+            cardList.append(cardBtn)
+            cardList[i].grid(row = 0, column = i)
         root.mainloop()
 ##-----------------
 def setNext(root, enterPlayerEntry):
