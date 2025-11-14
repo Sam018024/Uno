@@ -46,16 +46,20 @@ def playGame(root):
                     playerList[playerNum].drawCard(deck)
 
             if discardPile[0].getColour() == "Wild":
-                        choosingColour = True
-                        for widget in root.winfo_children():
-                            widget.destroy()
-                        for i in range(0,4):
-                            colourLabel = Label(root,
-                                                text = colours[i],
-                                                anchor = CENTER,
-                                                height = int(round((root.winfo_screenheight()/4), 0)),
-                                                bg = colours[i]
-                                                )
+                choosingColour = True
+                for widget in root.winfo_children():
+                    widget.destroy()
+                quarterScreen = root.winfo_screenheight()/4
+                for i in range(0,4):
+                    colourButton = Button(root,
+                                        text = colours[i],
+                                        anchor = CENTER,
+                                        height = int(round(quarterScreen/4, 0)),
+                                        bg = colours[i]
+                                        )
+                    colourButton.pack()
+                if choosingColour == True:
+                    root.mainloop()
             print("rrr")
             newTurn = True
             updateUI()
@@ -63,7 +67,7 @@ def playGame(root):
     def nextPlayer():
         nonlocal playerNum
         playerNum += order
-        if playerNum > len(playerList):
+        if playerNum > (len(playerList) - 1):
             playerNum = 0
         elif playerNum < 0:
             playerNum += len(playerList) - 1
@@ -73,6 +77,7 @@ def playGame(root):
         nonlocal root
         for widget in root.winfo_children():
             widget.destroy()
+        nextPlayer()
         script_dir = Path(__file__).parent
         image_path = script_dir / "assets" / discardPile[0].getFilename()
         discImage = PhotoImage(file=image_path)
