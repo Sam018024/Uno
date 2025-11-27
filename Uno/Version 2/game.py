@@ -3,6 +3,7 @@ from tkinter import *
 from tkinter import ttk
 from PIL import Image, ImageTk
 from pathlib import Path
+import time
 import initialisation
 ##HARDCODEDDATE----
 global colours
@@ -15,14 +16,22 @@ fgActiveHexa = "#F4C415"
 darkHexa = "#691111"
 darkActiveHexa = "#580E0E"
 ##-----------------
+def finish(root):
+    root.destroy()
+
 def playGame(root):
-    global playerList, discardPile, order, newTurn
-    playerNum = 0
-    order = 1
-    newTurn = True
     
     def playCard(playedCardList, num):
+        global order
         nonlocal root
+
+        def wildColour(colourNum):
+            nonlocal choosingColour
+            discardPile[0].setColour(colours[colourNum])
+            discardPile[0].setFilename()
+            choosingColour = False
+            root.quit()
+        
         playedCard = playedCardList[num]
         print("Card played:", playedCard.getFilename())
         
@@ -36,7 +45,7 @@ def playGame(root):
                 nextPlayer()
 
             elif discardPile[0].getValue() == "Reverse":
-                if len(playerList) ==2:
+                if len(playerList) == 2:
                     nextPlayer()
                 order *= -1
 
@@ -45,21 +54,24 @@ def playGame(root):
                 for i in range(int(discardPile[0].getValue()[1])):
                     playerList[playerNum].drawCard(deck)
 
+            choosingColour = True
             if discardPile[0].getColour() == "Wild":
-                choosingColour = True
                 for widget in root.winfo_children():
                     widget.destroy()
-                quarterScreen = root.winfo_screenheight()/4
+                quarterScreen = int(round((root.winfo_screenheight()/9), 0))
                 for i in range(0,4):
                     colourButton = Button(root,
                                         text = colours[i],
                                         anchor = CENTER,
-                                        height = int(round(quarterScreen/4, 0)),
+                                        command = lambda id=i: wildColour(id),
+                                        bd = 0,
+                                        width = int(root.winfo_screenwidth()),
+                                        font = ("Arial", quarterScreen, "bold"),
+                                        fg = "white",
                                         bg = colours[i]
                                         )
                     colourButton.pack()
-                if choosingColour == True:
-                    root.mainloop()
+                root.mainloop()
             print("rrr")
             newTurn = True
             updateUI()
@@ -70,89 +82,136 @@ def playGame(root):
         if playerNum > (len(playerList) - 1):
             playerNum = 0
         elif playerNum < 0:
-            playerNum += len(playerList) - 1
+            playerNum += len(playerList)
 
 
     def updateUI():
         nonlocal root
-        for widget in root.winfo_children():
-            widget.destroy()
-        nextPlayer()
-        script_dir = Path(__file__).parent
-        image_path = script_dir / "assets" / discardPile[0].getFilename()
-        discImage = PhotoImage(file=image_path)
-        size = int(round(3000/(root.winfo_screenheight()/4), 0))
-        discImage = discImage.subsample(size, size)
-        discardPileImage = Label(root,
-                                 image = discImage,
-                                 anchor = CENTER,
-                                 bg = bgHexa,
-                                 fg = fgHexa
-                                 )
-        discardPileImage.pack(pady = (root.winfo_screenheight()/8, 0))
+        if len(playerList[playerNum].getCardList()) != 0:
+            nextPlayer()
+            canGo = False
+            for i in range(0, len(playerList[playerNum].getCardList())):
+                checkCard = playerList[playerNum].getCardList()[i]
+                if checkCard.getColour() == discardPile[0].getColour() or checkCard.getValue() == discardPile[0].getValue() or checkCard.getColour() == "Wild":
+                    canGo = True
+            if canGo == True:
+                print(discardPile[0].getFilename())
+                for widget in root.winfo_children():
+                    widget.destroy()
+                script_dir = Path(__file__).parent
+                image_path = script_dir / "assets" / discardPile[0].getFilename()
+                discImage = PhotoImage(file=image_path)
+                size = int(round(3000/(root.winfo_screenheight()/3), 0))
+                discImage = discImage.subsample(size, size)
+                discardPileImage = Label(root,
+                                         image = discImage,
+                                         anchor = CENTER,
+                                         bg = bgHexa,
+                                         fg = fgHexa
+                                         )
+                discardPileImage.pack(pady = (root.winfo_screenheight()/8, 0))
 
-        playerLabel_var = StringVar()
-        playerLabel_var.set(str(playerList[playerNum].getPlayerName()) + ":")
-        playerLabel = Label(root,
-                            textvariable = playerLabel_var,
-                            anchor = CENTER,
-                            bg = bgHexa,
-                            fg = fgHexa,
-                            font = ("Arial", 40, "bold")
-                            )
+                playerLabel_var = StringVar()
+                playerLabel_var.set(str(playerList[playerNum].getPlayerName()) + ":")
+                playerLabel = Label(root,
+                                    textvariable = playerLabel_var,
+                                    anchor = CENTER,
+                                    bg = bgHexa,
+                                    fg = fgHexa,
+                                    font = ("Arial", 40, "bold")
+                                    )
         
-        handFrame = Frame(root,
-                          width=root.winfo_width(),
-                          bd=0,
-                          bg=fgHexa
-                          )
-        handCanvas = Canvas(handFrame,
-                            bg=darkHexa,
-                            bd = 0)
-        handScrollbar = Scrollbar(handFrame,
-                                  orient='horizontal',
-                                  command=handCanvas.xview
+                handFrame = Frame(root,
+                                  width=root.winfo_width(),
+                                  bd=0,
+                                  bg=fgHexa
                                   )
-        handCanvas.configure(xscrollcommand=handScrollbar.set)
+                handCanvas = Canvas(handFrame,
+                                    bg=darkHexa,
+                                    bd = 0)
+                handScrollbar = Scrollbar(handFrame,
+                                          orient='horizontal',
+                                          command=handCanvas.xview
+                                          )
+                handCanvas.configure(xscrollcommand=handScrollbar.set)
 
-        handScrollbar.pack(side='bottom', fill='x')
-        handCanvas.pack(pady=10, padx=10, side='bottom', fill='x')
-        handFrame.pack(side='bottom', fill='x')
+                handScrollbar.pack(side='bottom', fill='x')
+                handCanvas.pack(pady=10, padx=10, side='bottom', fill='x')
+                handFrame.pack(side='bottom', fill='x')
         
-        cardsFrame = Frame(handCanvas,
-                           bg=darkHexa,
-                           bd = 0
-                           )
-        handCanvas.create_window((0, 0), window=cardsFrame, anchor='nw')
+                cardsFrame = Frame(handCanvas,
+                                   bg=darkHexa,
+                                   bd = 0
+                                   )
+                handCanvas.create_window((0, 0), window=cardsFrame, anchor='nw')
         
-        playerLabel.pack(pady=5, side='bottom')
+                playerLabel.pack(pady=5, side='bottom')
 
-        cardList = []
-        cardImageList = []
-        for i in range(0, len(playerList[playerNum].getCardList())):
-            script_dir = Path(__file__).parent
-            image_path = script_dir / "assets" / playerList[playerNum].getCardList()[i].getFilename()
-            cardImage = PhotoImage(file=image_path)
-            cardImage = cardImage.subsample(size, size)
-            cardImageList.append(cardImage)
-            num = i
-            cardBtn = Button(cardsFrame,
-                             command = lambda id=i: playCard(playerList[playerNum].getCardList(), id),
-                       image = cardImageList[i],
-                       anchor = CENTER,
-                       border = 0,
-                       bg = bgHexa,
-                       fg = fgHexa
-                       )
-            cardList.append(cardBtn)
-            cardList[i].grid(row = 0, column = i)
-        cardsFrame.update_idletasks()
-        handCanvas.configure(scrollregion=handCanvas.bbox("all"))
+                cardList = []
+                cardImageList = []
+                for i in range(0, len(playerList[playerNum].getCardList())):
+                    script_dir = Path(__file__).parent
+                    image_path = script_dir / "assets" / playerList[playerNum].getCardList()[i].getFilename()
+                    cardImage = PhotoImage(file=image_path)
+                    cardImage = cardImage.subsample(size, size)
+                    cardImageList.append(cardImage)
+                    num = i
+                    cardBtn = Button(cardsFrame,
+                                     command = lambda id=i: playCard(playerList[playerNum].getCardList(), id),
+                               image = cardImageList[i],
+                               anchor = CENTER,
+                               border = 0,
+                               bg = bgHexa,
+                               fg = fgHexa
+                               )
+                    cardList.append(cardBtn)
+                    cardList[i].grid(row = 0, column = i)
+                cardsFrame.update_idletasks()
+                handCanvas.configure(scrollregion=handCanvas.bbox("all"))
         
-        if newTurn != True:
-            root.after(100, updateUI)
-        root.mainloop()
-            
+                if newTurn != True:
+                    root.after(100, updateUI)
+                root.mainloop()
+            else:
+                playerList[playerNum].drawCard(deck)
+                print(playerList[playerNum].getPlayerName(), "drew")
+                updateUI()
+        else:
+            for widget in root.winfo_children():
+                widget.destroy()
+            winningLabel_var = StringVar()
+            winningLabel_var.set(" " + str(playerList[playerNum].getPlayerName()) + " has won!!! ")
+            winningLabel = Label(root,
+                                 textvariable = winningLabel_var,
+                                 anchor = CENTER,
+                                 bg = fgHexa,
+                                 fg = darkHexa,
+                                 font = ("Arial", 140, "bold")
+                                 )
+
+            quitButton = Button(root,
+                                text = "Quit",
+                                command = lambda: finish(root),
+                                activebackground = fgActiveHexa,
+                                activeforeground = darkActiveHexa,
+                                anchor = "center",
+                                bg = fgHexa,
+                                fg = darkHexa,
+                                bd = 0,
+                                font = ("Arial", 50, "bold")
+                                )
+            root.grid_columnconfigure(0, weight=1)
+            root.grid_rowconfigure(0, weight=1)
+            root.grid_rowconfigure(1, weight=1)
+            winningLabel.grid(column = 0, row = 0)
+            quitButton.grid(column = 0, row = 1)
+
+
+    global playerList, discardPile, order, newTurn
+    playerNum = 0
+    order = 1
+    newTurn = True
+    
     discardPile = []
     deck = initialisation.Deck()
     deck.createDeck()
@@ -260,6 +319,7 @@ def lobby(root, playersQLabel, playerAmountCombobox, nextButton):
                                   fg = fgHexa,
                                   font = ("Arial", 30, "bold")
                                   )
+
             playerUserLbl.grid(row = 0, column = i, sticky="nsew", padx = 10)
         ruleLabel = Label(root,
                           text = " RULES: ",

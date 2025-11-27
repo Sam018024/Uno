@@ -7,9 +7,8 @@ import sys
 ##-----------------
 def play():
     print("play")
-    titleLabel.forget()
-    playButton.forget()
-    quitButton.forget()
+    for widget in root.winfo_children():
+        widget.destroy()
     game.playerChoice(root)
 
 def leave():
@@ -23,7 +22,7 @@ darkHexa = "#691111"
 darkActiveHexa = "#580E0E"
 ##WINDOWCREATION---
 root = Tk()
-root.geometry("790x560")
+root.geometry("790x700")
 root.title("Uno")
 root.configure(bg=bgHexa)
 ##-----------------
@@ -55,6 +54,21 @@ playButton = Button(root,
                     font = ("Arial", 50, "bold")
                     )
 ##-----------------
+##---LEADERBOARD---
+leadButton = Button(root,
+                    text = "Leaderboard",
+                    command = play,
+                    activebackground = fgActiveHexa,
+                    activeforeground = darkActiveHexa,
+                    anchor = "center",
+                    bg = fgHexa,
+                    fg = darkHexa,
+                    height = 1,
+                    width = 10,
+                    border = 0,
+                    font = ("Arial", 50, "bold")
+                    )
+##-----------------
 ##---QUIT----------
 quitButton = Button(root,
                     text = "Quit...",
@@ -73,7 +87,8 @@ quitButton = Button(root,
 ##WIDGETINITIALISE-
 titleLabel.pack(pady=20)
 playButton.pack()
-quitButton.pack(pady=20)
+leadButton.pack(pady=10)
+quitButton.pack()
 ##-----------------
 mainloop()
 ##-----------------
