@@ -173,8 +173,26 @@ def playGame(root):
                     root.after(100, updateUI)
                 root.mainloop()
             else:
-                playerList[playerNum].drawCard(deck)
-                print(playerList[playerNum].getPlayerName(), "drew")
+                print("67")
+                if ruleList[0] == "Draw Once":
+                    playerList[playerNum].drawCard(deck)
+                    print(playerList[playerNum].getPlayerName(), "drew")
+                elif ruleList[0] == "Draw until Playable":
+                    canGo = False
+                    print("EEE")
+                    while canGo == False:
+                        for i in range(0, len(playerList[playerNum].getCardList())):
+                            print("000")
+                            checkCard = playerList[playerNum].getCardList()[i]
+                            print("aaa")
+                            if checkCard.getColour() == discardPile[0].getColour() or checkCard.getValue() == discardPile[0].getValue() or checkCard.getColour() == "Wild":
+                                canGo = True
+                                print("bbb")
+                        if canGo == False:
+                            print("ccc")
+                            playerList[playerNum].drawCard(deck)
+                            print("ddd")
+                            print(playerList[playerNum].getPlayerName(), "drew")
                 updateUI()
         else:
             for widget in root.winfo_children():
@@ -490,6 +508,9 @@ def lobby(root, playersQLabel, playerAmountCombobox, nextButton):
         wildShuffleCombobox.current(0)
         ruleFrame.update_idletasks()
         wildShuffleCombobox.grid(row = 3, column = 2, sticky="nsew", padx = 10, ipady = 5)
+        ##-----------------
+        global ruleList
+        ruleList = [drawChoices, drawButtonChoices, sevenZeroChoices, stackingChoices, unoCallChoices, wildShuffleChoices]
         ##-----------------
         playButton = Button(root,
                             text = "Play!",
