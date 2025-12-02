@@ -19,7 +19,7 @@ darkActiveHexa = "#580E0E"
 def finish(root):
     root.destroy()
 
-def playGame(root):
+def playGame(root, drawRule, drawButtonRule, sevenZeroRule, stackingRule, unoCallRule, wildShuffleRule):
     
     def playCard(playedCardList, num):
         global order
@@ -58,7 +58,7 @@ def playGame(root):
             if discardPile[0].getColour() == "Wild":
                 for widget in root.winfo_children():
                     widget.destroy()
-                quarterScreen = int(round((root.winfo_screenheight()/9), 0))
+                quarterScreen = int(round((root.winfo_screenheight()/4), 0))
                 for i in range(0,4):
                     colourButton = Button(root,
                                         text = colours[i],
@@ -66,11 +66,11 @@ def playGame(root):
                                         command = lambda id=i: wildColour(id),
                                         bd = 0,
                                         width = int(root.winfo_screenwidth()),
-                                        font = ("Arial", quarterScreen, "bold"),
+                                        font = ("Arial", 10, "bold"),
                                         fg = "white",
                                         bg = colours[i]
                                         )
-                    colourButton.pack()
+                    colourButton.grid(column = 0, row = i, sticky="NSEW")
                 root.mainloop()
             print("rrr")
             newTurn = True
@@ -83,7 +83,6 @@ def playGame(root):
             playerNum = 0
         elif playerNum < 0:
             playerNum += len(playerList)
-
 
     def updateUI():
         nonlocal root
@@ -174,10 +173,10 @@ def playGame(root):
                 root.mainloop()
             else:
                 print("67")
-                if ruleList[0] == "Draw Once":
+                if drawRule == 'Draw Once':
                     playerList[playerNum].drawCard(deck)
                     print(playerList[playerNum].getPlayerName(), "drew")
-                elif ruleList[0] == "Draw until Playable":
+                elif drawRule == 'Draw until Playable':
                     canGo = False
                     print("EEE")
                     while canGo == False:
@@ -193,7 +192,9 @@ def playGame(root):
                             playerList[playerNum].drawCard(deck)
                             print("ddd")
                             print(playerList[playerNum].getPlayerName(), "drew")
-                updateUI()
+                else:
+                    print("djkjdfijhjvkdfjjio")
+                root.after(10, updateUI)
         else:
             for widget in root.winfo_children():
                 widget.destroy()
@@ -204,7 +205,7 @@ def playGame(root):
                                  anchor = CENTER,
                                  bg = fgHexa,
                                  fg = darkHexa,
-                                 font = ("Arial", 140, "bold")
+                                 font = ("Arial", 100, "bold")
                                  )
 
             quitButton = Button(root,
@@ -509,12 +510,9 @@ def lobby(root, playersQLabel, playerAmountCombobox, nextButton):
         ruleFrame.update_idletasks()
         wildShuffleCombobox.grid(row = 3, column = 2, sticky="nsew", padx = 10, ipady = 5)
         ##-----------------
-        global ruleList
-        ruleList = [drawChoices, drawButtonChoices, sevenZeroChoices, stackingChoices, unoCallChoices, wildShuffleChoices]
-        ##-----------------
         playButton = Button(root,
                             text = "Play!",
-                            command = lambda: playGame(root),
+                            command = lambda: playGame(root, drawCombobox.get(), drawButtonCombobox.get(), sevenZeroCombobox.get(), stackingCombobox.get(), unoCallCombobox.get(), wildShuffleCombobox.get()),
                             activebackground = fgActiveHexa,
                             activeforeground = darkActiveHexa,
                             anchor = "center",
