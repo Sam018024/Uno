@@ -23,7 +23,7 @@ def playGame(root, drawRule, drawButtonRule, sevenZeroRule, stackingRule, unoCal
     
     def playCard(playedCardList, num):
         global order
-        nonlocal root
+        nonlocal root, playerNum
 
         def wildColour(colourNum):
             nonlocal choosingColour
@@ -31,6 +31,9 @@ def playGame(root, drawRule, drawButtonRule, sevenZeroRule, stackingRule, unoCal
             discardPile[0].setFilename()
             choosingColour = False
             root.quit()
+
+        def swapHands(playerTarget):
+            print("SWAP")
 
         if num != "draw":
             playedCard = playedCardList[num]
@@ -66,24 +69,25 @@ def playGame(root, drawRule, drawButtonRule, sevenZeroRule, stackingRule, unoCal
                                           fg = fgHexa,
                                           anchor = CENTER
                                           )
-                        root.rowconfigure(0, weight = 0)
-                        infoLabel.grid(column = 0, row = 0)
+                        infoLabel.pack()
 
                         playersFrame = Frame(root,
                                              width = root.winfo_width(),
-                                             bg = fgHexa,
-                                             fg = bgHexa
+                                             bg = fgHexa
                                              )
-                        playersFrame.grid(column = 0, row = 0)
-                        playersFrame.columnconfigure(0, weight = 1)
-                        num = 0
-                        for i in range(0, len(playerList)-1):
+                        playersFrame.pack(fill='y', pady = 20, padx = 20)
+                        num = -1
+                        for i in range(0, len(playerList)):
                             num += 1
                             if i == playerNum:
+                                print("SCRW")
                                 num += 1
                             else:
+                                print("Yaabab")
+                                playersLbl_Var = StringVar()
+                                playersLbl_Var.set(playerList[i].getPlayerName())
                                 playerButton = Button(playersFrame,
-                                                      text = playerList[num],
+                                                      textvariable = playersLbl_Var,
                                                       anchor = CENTER,
                                                       command = lambda id=num: swapHands(id),
                                                       bd = 0,
@@ -92,6 +96,9 @@ def playGame(root, drawRule, drawButtonRule, sevenZeroRule, stackingRule, unoCal
                                                       bg = darkHexa
                                                       )
                                 
+                                playersFrame.grid(column = 0, row = num, sticky="NSEW", padx = 10)
+                                playersFrame.rowconfigure(i, weight = 1)
+                        root.mainloop()
 
                 choosingColour = True
                 if discardPile[0].getColour() == "Wild":
