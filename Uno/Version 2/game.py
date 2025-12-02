@@ -31,50 +31,96 @@ def playGame(root, drawRule, drawButtonRule, sevenZeroRule, stackingRule, unoCal
             discardPile[0].setFilename()
             choosingColour = False
             root.quit()
-        
-        playedCard = playedCardList[num]
-        print("Card played:", playedCard.getFilename())
-        
-        if playedCard.getColour() == discardPile[0].getColour() or playedCard.getValue() == discardPile[0].getValue() or playedCard.getColour() == "Wild":
 
-            discardPile.append(playerList[playerNum].getCardList()[num])
-            del discardPile[0]
-            del playerList[playerNum].getCardList()[num]
+        if num != "draw":
+            playedCard = playedCardList[num]
+            print("Card played:", playedCard.getFilename())
             
-            if discardPile[0].getValue() == "Skip":
-                nextPlayer()
+            if playedCard.getColour() == discardPile[0].getColour() or playedCard.getValue() == discardPile[0].getValue() or playedCard.getColour() == "Wild":
 
-            elif discardPile[0].getValue() == "Reverse":
-                if len(playerList) == 2:
+                discardPile.append(playerList[playerNum].getCardList()[num])
+                del discardPile[0]
+                del playerList[playerNum].getCardList()[num]
+                
+                if discardPile[0].getValue() == "Skip":
                     nextPlayer()
-                order *= -1
 
-            elif discardPile[0].getValue()[0] == "+":
-                nextPlayer()
-                for i in range(int(discardPile[0].getValue()[1])):
-                    playerList[playerNum].drawCard(deck)
+                elif discardPile[0].getValue() == "Reverse":
+                    if len(playerList) == 2:
+                        nextPlayer()
+                    order *= -1
 
-            choosingColour = True
-            if discardPile[0].getColour() == "Wild":
-                for widget in root.winfo_children():
-                    widget.destroy()
-                quarterScreen = int(round((root.winfo_screenheight()/4), 0))
-                for i in range(0,4):
-                    colourButton = Button(root,
-                                        text = colours[i],
-                                        anchor = CENTER,
-                                        command = lambda id=i: wildColour(id),
-                                        bd = 0,
-                                        width = int(root.winfo_screenwidth()),
-                                        font = ("Arial", 10, "bold"),
-                                        fg = "white",
-                                        bg = colours[i]
-                                        )
-                    colourButton.grid(column = 0, row = i, sticky="NSEW")
-                root.mainloop()
-            print("rrr")
+                elif discardPile[0].getValue()[0] == "+":
+                    nextPlayer()
+                    for i in range(int(discardPile[0].getValue()[1])):
+                        playerList[playerNum].drawCard(deck)
+
+                elif sevenZeroRule == '7s Swap 1 to 1' or sevenZeroRule == 'Both':
+                    if discardPile[0].getValue()[0] == "7":
+                        for widget in root.winfo_children():
+                            widget.destroy()
+                        infoLabel = Label(root,
+                                          text = "Choose who you want to swap hands with:",
+                                          font = ("Arial", 40, "bold"),
+                                          bg = bgHexa,
+                                          fg = fgHexa,
+                                          anchor = CENTER
+                                          )
+                        root.rowconfigure(0, weight = 0)
+                        infoLabel.grid(column = 0, row = 0)
+
+                        playersFrame = Frame(root,
+                                             width = root.winfo_width(),
+                                             bg = fgHexa,
+                                             fg = bgHexa
+                                             )
+                        playersFrame.grid(column = 0, row = 0)
+                        playersFrame.columnconfigure(0, weight = 1)
+                        num = 0
+                        for i in range(0, len(playerList)-1):
+                            num += 1
+                            if i == playerNum:
+                                num += 1
+                            else:
+                                playerButton = Button(playersFrame,
+                                                      text = playerList[num],
+                                                      anchor = CENTER,
+                                                      command = lambda id=num: swapHands(id),
+                                                      bd = 0,
+                                                      font = ("Arial", 30, "bold"),
+                                                      fg = fgHexa,
+                                                      bg = darkHexa
+                                                      )
+                                
+
+                choosingColour = True
+                if discardPile[0].getColour() == "Wild":
+                    for widget in root.winfo_children():
+                        widget.destroy()
+                    quarterScreen = int(round((root.winfo_screenheight()/4), 0))
+                    for i in range(0,4):
+                        colourButton = Button(root,
+                                            text = colours[i],
+                                            anchor = CENTER,
+                                            command = lambda id=i: wildColour(id),
+                                            bd = 0,
+                                            width = int(root.winfo_screenwidth()),
+                                            font = ("Arial", 10, "bold"),
+                                            fg = "white",
+                                            bg = colours[i]
+                                            )
+                        root.rowconfigure(i, weight=1)
+                        colourButton.grid(column = 0, row = i, sticky="NSEW")
+                    root.mainloop()
+                print("rrr")
+                newTurn = True
+                updateUI()
+        else:
+            playerList[playerNum].drawCard(deck)
+            print("ghgh")
             newTurn = True
             updateUI()
+            
 
     def nextPlayer():
         nonlocal playerNum
@@ -146,6 +192,20 @@ def playGame(root, drawRule, drawButtonRule, sevenZeroRule, stackingRule, unoCal
         
                 playerLabel.pack(pady=5, side='bottom')
 
+                if drawButtonRule == 'Have Button':
+                    script_dir = Path(__file__).parent
+                    drawCardImage_path = script_dir / "assets" / "Draw.png"
+                    drawCardImage = PhotoImage(file=drawCardImage_path)
+                    drawCardImage = drawCardImage.subsample(size, size)
+                    drawCardBtn = Button(cardsFrame,
+                                         command = lambda: playCard(playerList[playerNum].getCardList(), "draw"),
+                                         image = drawCardImage,
+                                         anchor = CENTER,
+                                         border = 0,
+                                         bg = bgHexa,
+                                         fg = fgHexa
+                                         )
+                    drawCardBtn.grid(row = 0, column = 0)
                 cardList = []
                 cardImageList = []
                 for i in range(0, len(playerList[playerNum].getCardList())):
@@ -164,7 +224,10 @@ def playGame(root, drawRule, drawButtonRule, sevenZeroRule, stackingRule, unoCal
                                fg = fgHexa
                                )
                     cardList.append(cardBtn)
-                    cardList[i].grid(row = 0, column = i)
+                    if drawButtonRule == 'Have Button':
+                        cardList[i].grid(row = 0, column = i+1)
+                    else:
+                        cardList[i].grid(row = 0, column = i)
                 cardsFrame.update_idletasks()
                 handCanvas.configure(scrollregion=handCanvas.bbox("all"))
         
