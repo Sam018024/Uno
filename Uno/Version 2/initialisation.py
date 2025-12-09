@@ -37,10 +37,11 @@ class Deck(object):
         self.__cardList = []
 
     def createDeck(self):
-        for i in range(0,len(colours)):
-            card = Card(colours[i], "0")
-            card.setFilename()
-            self.__cardList.append(card)
+        for i in range(0,20):
+            for i in range(0,len(colours)):
+                card = Card(colours[i], "0")
+                card.setFilename()
+                self.__cardList.append(card)
         for h in range(0,2):
             for i in range(0,len(colouredValues)):
                 for j in range(0,len(colours)):
@@ -94,6 +95,9 @@ class playerHand(object):
 
     def getCardList(self):
         return self.__cardList
+
+    def setCardList(self, cards):
+        self.__cardList = cards
 
     def drawStartingHand(self, deck):
         for i in range(0,7):

@@ -33,7 +33,11 @@ def playGame(root, drawRule, drawButtonRule, sevenZeroRule, stackingRule, unoCal
             root.quit()
 
         def swapHands(playerTarget):
-            print("SWAP")
+            targetHand = playerList[playerTarget].getCardList()
+            playerHand = playerList[playerNum].getCardList()
+            playerList[playerTarget].setCardList(playerHand)
+            playerList[playerNum].setCardList(targetHand)
+            updateUI()
 
         if num != "draw":
             playedCard = playedCardList[num]
@@ -58,24 +62,18 @@ def playGame(root, drawRule, drawButtonRule, sevenZeroRule, stackingRule, unoCal
                     for i in range(int(discardPile[0].getValue()[1])):
                         playerList[playerNum].drawCard(deck)
 
-                elif sevenZeroRule == '7s Swap 1 to 1' or sevenZeroRule == 'Both':
+                if sevenZeroRule == '7s Swap 1 to 1' or sevenZeroRule == 'Both':
                     if discardPile[0].getValue()[0] == "7":
                         for widget in root.winfo_children():
                             widget.destroy()
-                        infoLabel = Label(root,
-                                          text = "Choose who you want to swap hands with:",
-                                          font = ("Arial", 40, "bold"),
-                                          bg = bgHexa,
-                                          fg = fgHexa,
-                                          anchor = CENTER
-                                          )
-                        infoLabel.pack()
+                        infoLabel = Label(root, text = "Choose who you want to swap hands with:", font = ("Arial", 40, "bold"), bg = bgHexa, fg = fgHexa, anchor = CENTER)
+                        infoLabel.pack(pady = 20)
 
                         playersFrame = Frame(root,
                                              width = root.winfo_width(),
                                              bg = fgHexa
                                              )
-                        playersFrame.pack(fill='y', pady = 20, padx = 20)
+                        playersFrame.pack(fill='x', pady = 20, padx = 20)
                         num = -1
                         for i in range(0, len(playerList)):
                             num += 1
@@ -89,17 +87,31 @@ def playGame(root, drawRule, drawButtonRule, sevenZeroRule, stackingRule, unoCal
                                 playerButton = Button(playersFrame,
                                                       textvariable = playersLbl_Var,
                                                       anchor = CENTER,
-                                                      command = lambda id=num: swapHands(id),
+                                                      command = lambda id=num: swapHands(id-1),
                                                       bd = 0,
                                                       font = ("Arial", 30, "bold"),
                                                       fg = fgHexa,
                                                       bg = darkHexa
                                                       )
                                 
-                                playersFrame.grid(column = 0, row = num, sticky="NSEW", padx = 10)
+                                playerButton.grid(column = 0, row = i, sticky="NSEW", padx = 10, pady = 10)
                                 playersFrame.rowconfigure(i, weight = 1)
+                                playersFrame.columnconfigure(0, weight = 1)
                         root.mainloop()
-
+                if sevenZeroRule == '0s Swap Clockwise' or sevenZeroRule == 'Both':
+                    if discardPile[0].getValue()[0] == "0":
+                        hand1 = playerList[0].getCardList()
+                        for i in range(1, len(playerList)):
+                            hand2 = playerList[i].getCardList()
+                            num = i
+                            if i == len(playerList):
+                                num = i - len(playerList)
+                            playerList[num].setCardList(hand1)
+                            hand1 = hand2
+                            print("Swap", str(num))
+                        playerList[0].setCardList(hand1)
+                    
+                            
                 choosingColour = True
                 if discardPile[0].getColour() == "Wild":
                     for widget in root.winfo_children():
@@ -113,7 +125,7 @@ def playGame(root, drawRule, drawButtonRule, sevenZeroRule, stackingRule, unoCal
                                             bd = 0,
                                             width = int(root.winfo_screenwidth()),
                                             font = ("Arial", 10, "bold"),
-                                            fg = "white",
+                                            fg = darkHexa,
                                             bg = colours[i]
                                             )
                         root.rowconfigure(i, weight=1)
